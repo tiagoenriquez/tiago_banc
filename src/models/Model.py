@@ -33,30 +33,12 @@ class Model:
             await connection.commit()
     
     @classmethod
-    async def find(cls, key: str, value: any):
-        async with await get_connection() as connection:
-            cursor = await connection.cursor()
-            await cursor.execute(f"select * from {cls.class_table()} where {key} = ?", [value])
-            result = await cursor.fetchall()
-            if not result:
-                return None
-            instances = []
-            for row in result:
-                instances.append(cls.__convert_select(row, cursor))
-            return instances
+    async def find_all(cls):
+        return await cls.__find_many(f"select * from {cls.class_table()}")
     
     @classmethod
-    async def find_all(cls):
-        async with await get_connection() as connection:
-            cursor = await connection.cursor()
-            await cursor.execute(f"select * from {cls.class_table()}")
-            result = await cursor.fetchall()
-            if not result:
-                return None
-            instances = []
-            for row in result:
-                instances.append(cls.__convert_select(row, cursor))
-            return instances
+    async def find_all_sorted(cls, key: str, towards = "desc"):
+        return await cls.__find_many(f"select * from {cls.class_table()} order by {towards} {key}")
     
     @classmethod
     async def find_by_id(cls, id: int):
@@ -67,6 +49,30 @@ class Model:
             if not result:
                 return None
             return cls.__convert_select(result, cursor)
+    
+    @classmethod
+    async def find_by_key(cls, key: str, value: any):
+        return await cls.__find_many(f"select * from {cls.class_table()} where {key} = ?", [value])
+    
+    @classmethod
+    async def find_by_key_sorted(cls, key: str, value: any, sorted_key: str, towards = "desc"):
+        return await cls.__find_many(
+            f"select * from {cls.class_table()} " +
+            f"where {key} = ? order by {towards} {sorted_key}",
+            [value]
+        )
+    
+    @classmethod
+    async def find_paginated(cls, limit: int, offset: int):
+        return await cls.__find_many(f"select * from {cls.class_table()} limit {limit} offset {offset}")
+    
+    @classmethod
+    async def find_paginated_by_key(cls, key: str, value: str, limit: int, offset: int):
+        return await cls.__find_many(
+            f"select * from {cls.class_table()} " +
+            f"where {key} = ? limit {limit} offset {offset}",
+            [value]
+        )
     
     async def insert(self) -> None:
         async with await get_connection() as connection:
@@ -91,3 +97,16 @@ class Model:
         for description in cursor.description:
             fields.append(description[0])
         return cls(**dict(zip(fields, result)))
+    
+    @classmethod
+    async def __find_many(cls, query: str):
+        async with await get_connection() as connection:
+            cursor = await connection.cursor()
+            await cursor.execute(query)
+            result = await cursor.fetchall()
+            if not result:
+                return None
+            instances = []
+            for row in result:
+                instances.append(cls.__convert_select(row, cursor))
+            return instances
