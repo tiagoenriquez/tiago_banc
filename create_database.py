@@ -1,6 +1,6 @@
 import sys
 import os
-from src.databases.connection import connection
+from src.databases.connection import get_connection
 
 sys.path.append(os.path.abspath("."))
 

@@ -1,4 +1,4 @@
-definition = """create table if not exists transacoes (
+definition = """create table if not exists transacaos (
     id integer primary key autoincrement not null,
     valor numeric not null,
     tipo varchar (9),
