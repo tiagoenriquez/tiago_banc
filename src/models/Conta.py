@@ -6,3 +6,4 @@ class Conta(Model):
         self.id = id
         self.numero = numero
         self.saldo = saldo
+        self.usuario_id = usuario_id

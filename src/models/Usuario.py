@@ -8,12 +8,3 @@ class Usuario(Model):
         self.cpf = cpf
         self.perfil = perfil
         self.senha = senha
-    
-    # def fields(self) -> list[str]:
-    #     return ["nome", "cpf", "perfil", "senha"]
-    
-    # def to_inserted_array(self) -> list:
-    #     return [self.nome, self.cpf, self.perfil, self.senha]
-    
-    # def to_updated_array(self) -> list:
-    #     return [self.nome, self.cpf, self.perfil, self.senha, self.id]

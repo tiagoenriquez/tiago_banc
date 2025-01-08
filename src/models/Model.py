@@ -28,9 +28,7 @@ class Model:
             return result[0]
     
     async def delete(self) -> None:
-        async with await get_connection() as connection:
-            await connection.execute(f"delete from {self.table()} where id = {self.id}")
-            await connection.commit()
+        await self.__manipulate(f"delete from {self.table()} where id = {self.id}")
     
     @classmethod
     async def find_all(cls):
@@ -75,21 +73,16 @@ class Model:
         )
     
     async def insert(self) -> None:
-        async with await get_connection() as connection:
-            await connection.execute(
-                f"insert into {self.table()} ({', '.join(self.keys()[1:])}) " +
-                f"values ({'?, ' * (len(self.values()) - 2)}?)",
-                self.values()[1: ]
-            )
-            await connection.commit()
+        await self.__manipulate(
+            f"insert into {self.table()} ({', '.join(self.keys()[1:])}) values ({'?, ' * (len(self.values()) - 2)}?)",
+            self.values()[1: ]
+        )
     
     async def update(self) -> None:
-        async with await get_connection() as connection:
-            await connection.execute(
-                f"update {self.table()} set {' = ?, '.join(self.keys()[1:])} = ? where id = {self.id}",
-                self.values()[1:]
-            )
-            await connection.commit()
+        await self.__manipulate(
+            f"update {self.table()} set {' = ?, '.join(self.keys()[1:])} = ? where id = {self.id}",
+            self.values()[1:]
+        )
     
     @classmethod
     def __convert_select(cls, result, cursor: Cursor):
@@ -99,14 +92,19 @@ class Model:
         return cls(**dict(zip(fields, result)))
     
     @classmethod
-    async def __find_many(cls, query: str):
+    async def __find_many(cls, query: str, data = []):
         async with await get_connection() as connection:
             cursor = await connection.cursor()
-            await cursor.execute(query)
+            await cursor.execute(query, data)
             result = await cursor.fetchall()
             if not result:
                 return None
             instances = []
             for row in result:
                 instances.append(cls.__convert_select(row, cursor))
-            return instances
+            return instances 
+
+    async def __manipulate(self, query: str, data = []) -> None:
+        async with await get_connection() as connection:
+            await connection.execute(query, data)
+            await connection.commit()
