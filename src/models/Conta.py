@@ -1,4 +1,5 @@
 from src.models.Model import Model
+from src.models.Transacao import Transacao
 
 
 class Conta(Model):
@@ -7,3 +8,6 @@ class Conta(Model):
         self.numero = numero
         self.saldo = saldo
         self.usuario_id = usuario_id
+    
+    async def transacoes(self) -> list[Transacao]:
+        return await Transacao.find_by_key("conta_id", self.id)

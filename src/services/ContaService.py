@@ -5,3 +5,6 @@ from src.models.Conta import Conta
 async def inserir(conta_request: ContaRequest) -> None:
     conta = Conta(conta_request.numero, 0.0, conta_request.usuario_id)
     await conta.insert()
+
+async def procurar(id: int) -> Conta:
+    return await Conta.find_by_id(id)
