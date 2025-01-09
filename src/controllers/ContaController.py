@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status
 
 from src.auth import Auth
 from src.base_models.request.ContaRequest import ContaRequest

@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath("."))
 
 
 from src.controllers import ContaController
-from src.controllers import LoginController, UsuarioController
+from src.controllers import LoginController, TransacaoController, UsuarioController
 
 
 app = FastAPI()
@@ -21,3 +21,4 @@ def read_root():
 app.include_router(UsuarioController.router)
 app.include_router(LoginController.router)
 app.include_router(ContaController.router)
+app.include_router(TransacaoController.router)
