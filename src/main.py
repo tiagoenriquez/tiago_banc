@@ -18,7 +18,7 @@ tags_metadata = [
 ]
 
 app = FastAPI(
-    title="Api Bancária de Tiago Tachy",
+    title="Web Service Bancária de Tiago Tachy",
     version="1.0.0",
     summary="Web service para cadastro de saques e depósitos em contas bancárias",
     description="""
