@@ -13,4 +13,4 @@ async def inserir(transacao: TransacaoRequest):
         await TransacaoService.inserir(transacao)
         return {"message": "Transação realizada com sucesso"}
     except Exception as exception:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, exception.args[0])
+        raise HTTPException(status.HTTP_409_CONFLICT, exception.args[0])
